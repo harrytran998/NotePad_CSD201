@@ -3,10 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package view;
+package model;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 /**
@@ -32,6 +33,7 @@ public class ReplaceDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        buttonGroup1 = new javax.swing.ButtonGroup();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         tfFindWhat = new javax.swing.JTextField();
@@ -42,6 +44,8 @@ public class ReplaceDialog extends javax.swing.JDialog {
         btnReplaceAll = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
         chbxMatchCase = new javax.swing.JCheckBox();
+        rbtnUp = new javax.swing.JRadioButton();
+        rbtnDown = new javax.swing.JRadioButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Replace");
@@ -87,13 +91,20 @@ public class ReplaceDialog extends javax.swing.JDialog {
 
         chbxMatchCase.setText("Match Case");
 
+        buttonGroup1.add(rbtnUp);
+        rbtnUp.setText("Up");
+
+        buttonGroup1.add(rbtnDown);
+        rbtnDown.setSelected(true);
+        rbtnDown.setText("Down");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
@@ -101,9 +112,15 @@ public class ReplaceDialog extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(tfFindWhat, javax.swing.GroupLayout.DEFAULT_SIZE, 306, Short.MAX_VALUE)
-                            .addComponent(tfReplace)))
-                    .addComponent(chbxMatchCase))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(tfReplace))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(chbxMatchCase)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 232, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(rbtnUp)
+                            .addComponent(rbtnDown))
+                        .addGap(30, 30, 30)))
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
@@ -117,18 +134,41 @@ public class ReplaceDialog extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(tfReplace, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(chbxMatchCase)
-                .addGap(35, 35, 35))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(chbxMatchCase)
+                        .addGap(35, 35, 35))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(rbtnUp)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(rbtnDown)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
             .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    public JRadioButton getRbtnDown() {
+        return rbtnDown;
+    }
+
+    public void setRbtnDown(JRadioButton rbtnDown) {
+        this.rbtnDown = rbtnDown;
+    }
+
+    public JRadioButton getRbtnUp() {
+        return rbtnUp;
+    }
+
     /**
      * @param args the command line arguments
      */
+    public void setRbtnUp(JRadioButton rbtnUp) {
+        this.rbtnUp = rbtnUp;
+    }
 
     public JButton getBtnCancel() {
         return btnCancel;
@@ -188,17 +228,20 @@ public class ReplaceDialog extends javax.swing.JDialog {
     public void setTfReplace(JTextField tfReplace) {
         this.tfReplace = tfReplace;
     }
-    
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnFindNext;
     private javax.swing.JButton btnReplace;
     private javax.swing.JButton btnReplaceAll;
+    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JCheckBox chbxMatchCase;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JRadioButton rbtnDown;
+    private javax.swing.JRadioButton rbtnUp;
     private javax.swing.JTextField tfFindWhat;
     private javax.swing.JTextField tfReplace;
     // End of variables declaration//GEN-END:variables

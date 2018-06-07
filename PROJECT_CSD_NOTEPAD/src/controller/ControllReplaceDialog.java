@@ -9,6 +9,6 @@ package controller;
  *
  * @author DemonsLight
  */
-public class FontChooser {
+public class ControllReplaceDialog {
     
 }
