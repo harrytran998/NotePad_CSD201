@@ -22,7 +22,6 @@ import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
-import javax.swing.event.MenuDragMouseEvent;
 import view.FindDialog;
 import view.NotePadForm;
 import model.ReplaceDialog;
@@ -39,75 +38,19 @@ public class HandlingWorkAll {
     JColorChooser fontColor;
     NotePadForm ntp;
     FindDialog findDlog;
+    FileOperation fo;
+
     UndoManager undoManager;
     HanldingEdit editHandler;
     ReplaceDialog replaceDlog;
     private boolean saved, newFileFlag;
-    private String fileName, appTitle = "Notto ♥";
+    private  String fileName;
+    private final String appTitle = "Notto ♥";
     private File fileRef;
     private JFileChooser chooser;
     int lastIndex;
 
-    public boolean isSaved() {
-        return saved;
-    }
-
-    public void setSaved(boolean saved) {
-        this.saved = saved;
-    }
-
-    public boolean isNewFileFlag() {
-        return newFileFlag;
-    }
-
-    public void setNewFileFlag(boolean newFileFlag) {
-        this.newFileFlag = newFileFlag;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public String getAppTitle() {
-        return appTitle;
-    }
-
-    public void setAppTitle(String appTitle) {
-        this.appTitle = appTitle;
-    }
-
-    public File getFileRef() {
-        return fileRef;
-    }
-
-    public void setFileRef(File fileRef) {
-        this.fileRef = fileRef;
-    }
-
-    public JFileChooser getChooser() {
-        return chooser;
-    }
-
-    public void setChooser(JFileChooser chooser) {
-        this.chooser = chooser;
-    }
-
-    public HandlingWorkAll(NotePadForm ntp) {
-        this.ntp = ntp;
-        saved = true;
-        newFileFlag = true;
-        fileName = "Untitled";
-        fileRef = new File(fileName);
-        this.ntp.setTitle(fileName + " - " + appTitle);
-        chooser = new JFileChooser();
-        chooser.addChoosableFileFilter(new MyFileFilter(".java", "Java Source Files(*.java)"));
-        chooser.addChoosableFileFilter(new MyFileFilter(".txt", "Text Files(*.txt)"));
-        chooser.setCurrentDirectory(new File("."));
-    }
+    
 
     public HandlingWorkAll(NotePadForm ntp, FindDialog findDlog, ReplaceDialog re) {
         this.ntp = ntp;
@@ -117,167 +60,167 @@ public class HandlingWorkAll {
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Handling File Methods">     
-    void newFile() {
-        if (!confirmSave()) {
-            return;
-        }
-
-        this.ntp.getTxtAria().setText("");
-        fileName = new String("Untitled");
-        fileRef = new File(fileName);
-        saved = true;
-        newFileFlag = true;
-        this.ntp.setTitle(fileName + " - " + appTitle);
-
-    }
-
-    boolean openFile(File temp) {
-        FileInputStream fin = null;
-        BufferedReader din = null;
-        try {
-            fin = new FileInputStream(temp);
-            din = new BufferedReader(new InputStreamReader(fin));
-            String str = " ";
-            while (str != null) {
-                str = din.readLine();
-                if (str == null) {
-                    break;
-                }
-                this.ntp.getTxtAria().append(str + "\n");
-            }
-
-        } catch (IOException ioe) {
-            updateStatus(temp, false);
-            return false;
-        } finally {
-            try {
-                din.close();
-                fin.close();
-            } catch (IOException excp) {
-
-            }
-        }
-        updateStatus(temp, true);
-        this.ntp.getTxtAria().setCaretPosition(0);
-        return true;
-    }
-
-    public void openFile() {
-        if (!confirmSave()) {
-            return;
-        }
-        File temp = null;
-        do {
-            if (chooser.showOpenDialog(this.ntp) != JFileChooser.APPROVE_OPTION) {
-                return;
-            }
-            temp = chooser.getSelectedFile();
-            if (temp.exists()) {
-                break;
-            }
-            JOptionPane.showMessageDialog(this.ntp,
-                    "<html>" + temp.getName() + "<br>file not found.<br>"
-                    + "Please verify the correct file name was given.<html>",
-                    "Open", JOptionPane.INFORMATION_MESSAGE);
-
-        } while (true);
-        this.ntp.getTxtAria().setText("");
-        if (!openFile(temp)) {
-            fileName = "Untitled";
-            saved = true;
-            this.ntp.setTitle(fileName + " - " + appTitle);
-        }
-        if (!temp.canWrite()) {
-            newFileFlag = true;
-        }
-    }
-
-    boolean saveFile(File temp) {
-        FileWriter fout = null;
-        try {
-            fout = new FileWriter(temp);
-            fout.write(ntp.getTxtAria().getText());
-        } catch (IOException e) {
-            updateStatus(temp, false);
-            return false;
-        } finally {
-            try {
-                fout.close();
-            } catch (Exception e) {
-
-            }
-        }
-        updateStatus(temp, true);
-        return true;
-    }
-
-    boolean saveThisFile() {
-        if (!newFileFlag) {
-            return saveFile(fileRef);
-        }
-        return saveAsFile();
-    }
-
-    void updateStatus(File temp, boolean saved) {
-        if (saved) {
-            this.saved = true;
-            fileName = new String(temp.getName());
-            if (!temp.canWrite()) {
-                fileName += "(Read only)";
-                newFileFlag = true;
-            }
-            fileRef = temp;
-            ntp.getTxtAria().setText(fileName + " - " + appTitle);
-            newFileFlag = false;
-            ntp.getStatusBar().setText("File : " + temp.getPath() + " saved/opened successfully.");
-        } else {
-            ntp.getStatusBar().setText("Failed to save/open : " + temp.getPath());
-        }
-    }
-
-    boolean saveAsFile() {
-        File temp = null;
-        do {
-            if (chooser.showSaveDialog(this.ntp) != JFileChooser.APPROVE_OPTION) {
-                return false;
-            }
-            temp = chooser.getSelectedFile();
-            if (!temp.exists()) {
-                break;
-            }
-            if (JOptionPane.showConfirmDialog(
-                    this.ntp, "<html>" + temp.getPath() + " already exists.<br>Do you want to replace it?<html>",
-                    "Save As", JOptionPane.YES_NO_OPTION
-            ) == JOptionPane.YES_OPTION) {
-                break;
-            }
-        } while (true);
-
-        return saveFile(temp);
-    }
-
-    boolean confirmSave() {
-        String strMsg = "<html>The text in the " + fileName + " file has been changed.<br>"
-                + "Do you want to save the changes?<html>";
-        if (!saved) {
-            int x = JOptionPane.showConfirmDialog(this.ntp, strMsg, appTitle, JOptionPane.YES_NO_CANCEL_OPTION);
-
-            if (x == JOptionPane.CANCEL_OPTION) {
-                return false;
-            }
-            if (x == JOptionPane.YES_OPTION && !saveAsFile()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    void pageSetup() {
-
-    }
-
-    // </editor-fold>
-    
+//    void newFile() {
+//        
+//        if (!confirmSave()) {
+//            return;
+//        }
+//        ntp.getTxtAria().setText("");
+//        fileName = "Untitled";
+//        fileRef = new File(fileName);
+//        saved = true;
+//        newFileFlag = true;
+//        ntp.setTitle(fileName + " - " + appTitle);
+//    }
+//
+//    boolean openFile(File temp) {
+//        FileInputStream fin = null;
+//        BufferedReader din = null;
+//        try {
+//            fin = new FileInputStream(temp);
+//            din = new BufferedReader(new InputStreamReader(fin));
+//            String str = " ";
+//            while (str != null) {
+//                str = din.readLine();
+//                if (str == null) {
+//                    break;
+//                }
+//                this.ntp.getTxtAria().append(str + "\n");
+//            }
+//
+//        } catch (IOException ioe) {
+//            updateStatus(temp, false);
+//            return false;
+//        } finally {
+//            try {
+//                din.close();
+//                fin.close();
+//            } catch (IOException excp) {
+//
+//            }
+//        }
+//        updateStatus(temp, true);
+//        this.ntp.getTxtAria().setCaretPosition(0);
+//        return true;
+//    }
+//
+//    public void openFile() {
+//        if (!confirmSave()) {
+//            return;
+//        }
+//        File temp = null;
+//        
+//        do {
+//            if (chooser.showOpenDialog(ntp) != JFileChooser.APPROVE_OPTION) {
+//                return;
+//            }
+//            temp = chooser.getSelectedFile();
+//            if (temp.exists()) {
+//                break;
+//            }
+//            JOptionPane.showMessageDialog(ntp,
+//                    "<html>" + temp.getName() + "<br>file not found.<br>"
+//                    + "Please verify the correct file name was given.<html>",
+//                    "Open", JOptionPane.INFORMATION_MESSAGE);
+//
+//        } while (true);
+//        
+//        ntp.getTxtAria().setText("");
+//        
+//        if (!openFile(temp)) {
+//            fileName = "Untitled";
+//            saved = true;
+//            ntp.setTitle(fileName + " - " + appTitle);
+//        }
+//        
+//        if (!temp.canWrite()) {
+//            newFileFlag = true;
+//        }
+//    }
+//
+//    boolean saveFile(File temp) {
+//        FileWriter fout = null;
+//        try {
+//            fout = new FileWriter(temp);
+//            fout.write(ntp.getTxtAria().getText());
+//        } catch (IOException e) {
+//            updateStatus(temp, false);
+//            return false;
+//        } finally {
+//            try {
+//                fout.close();
+//            } catch (Exception e) {
+//
+//            }
+//        }
+//        updateStatus(temp, true);
+//        return true;
+//    }
+//
+//    boolean saveThisFile() {
+//        if (!newFileFlag) {
+//            return saveFile(fileRef);
+//        }
+//        return saveAsFile();
+//    }
+//
+//    void updateStatus(File temp, boolean saved) {
+//        if (saved) {
+//            this.saved = true;
+//            fileName = new String(temp.getName());
+//            if (!temp.canWrite()) {
+//                fileName += "(Read only)";
+//                newFileFlag = true;
+//            }
+//            fileRef = temp;
+//            ntp.getTxtAria().setText(fileName + " - " + appTitle);
+//            newFileFlag = false;
+//            ntp.getStatusBar().setText("File : " + temp.getPath() + " saved/opened successfully.");
+//        } else {
+//            ntp.getStatusBar().setText("Failed to save/open : " + temp.getPath());
+//        }
+//    }
+//
+//    boolean saveAsFile() {
+//        File temp = null;
+//        do {
+//            if (chooser.showSaveDialog(ntp) != JFileChooser.APPROVE_OPTION) {
+//                return false;
+//            }
+//            temp = chooser.getSelectedFile();
+//            if (!temp.exists()) {
+//                break;
+//            }
+//            if (JOptionPane.showConfirmDialog(
+//                    ntp, "<html>" + temp.getPath() + " already exists.<br>Do you want to replace it?<html>",
+//                    "Save As", JOptionPane.YES_NO_OPTION
+//            ) == JOptionPane.YES_OPTION) {
+//                break;
+//            }
+//        } while (true);
+//        return saveFile(temp);
+//    }
+//
+//    boolean confirmSave() {
+//        String strMsg = "<html>The text in the " + fileName + " file has been changed.<br>"
+//                + "Do you want to save the changes?<html>";
+//        if (!saved) {
+//            int x = JOptionPane.showConfirmDialog(ntp, strMsg, appTitle, JOptionPane.YES_NO_CANCEL_OPTION);
+//
+//            if (x == JOptionPane.CANCEL_OPTION) {
+//                return false;
+//            }
+//            if (x == JOptionPane.YES_OPTION && !saveAsFile()) {
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
+//
+//    void pageSetup() {
+//
+//    }
+    //</editor-fold>
     // <editor-fold defaultstate="collapsed" desc="File Handling Event">   
     private void fileHandling() {
         ntp.setVisible(true);
@@ -286,7 +229,7 @@ public class HandlingWorkAll {
         ntp.getFileOpen().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                openFile();
+                fo.openFile();
             }
         });
 
@@ -313,7 +256,7 @@ public class HandlingWorkAll {
         ntp.getFileExit().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (confirmSave()) {
+                if (fo.confirmSave()) {
                     System.exit(0);
                 }
             }
@@ -322,14 +265,14 @@ public class HandlingWorkAll {
         ntp.getFileSave().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                saveThisFile();
+                fo.saveThisFile();
             }
         });
 
         ntp.getFileSaveAs().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                saveAsFile();
+                fo.saveAsFile();
             }
         });
 
@@ -338,7 +281,6 @@ public class HandlingWorkAll {
     }
 
     // </editor-fold>
-    
     // <editor-fold defaultstate="collapsed" desc="Edit Handling"> 
     private void editFileHandling() {
         ntp.getEditUndo().addActionListener(new ActionListener() {
@@ -422,9 +364,7 @@ public class HandlingWorkAll {
 
     }
     // </editor-fold>
-    
-    
-   
+
     public static void main(String[] args) {
         HandlingWorkAll hdWork = new HandlingWorkAll(new NotePadForm(), new FindDialog(null, true), new ReplaceDialog(null, true));
         hdWork.fileHandling();
